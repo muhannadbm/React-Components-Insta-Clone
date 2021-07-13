@@ -5,16 +5,21 @@
 */
 
 // Import the state hook
-import React from 'react';
+import React, { useState } from 'react';
+import Posts from './components/Posts/Posts'
+import SearchBar from './components/SearchBar/SearchBar';
+import DummyD from './dummy-data'
 // Import the Posts (plural!) and SearchBar components, since they are used inside App component
 // Import the dummyData
 import './App.css';
+import dummyData from './dummy-data';
 
 const App = () => {
   // Create a state called `posts` to hold the array of post objects, **initializing to dummyData**.
   // This state is the source of truth for the data inside the app. You won't be needing dummyData anymore.
   // To make the search bar work (which is stretch) we'd need another state to hold the search term.
-
+  const [posts,setPosts] = useState(DummyD)
+  const [searchterm, searchEdit] = useState('')
   const likePost = postId => {
     /*
       This function serves the purpose of increasing the number of likes by one, of the post with a given id.
@@ -27,12 +32,64 @@ const App = () => {
         - if the `id` of the post matches `postId`, return a new post object with the desired values (use the spread operator).
         - otherwise just return the post object unchanged.
      */
+    setPosts(posts.map(post => {
+      if(post.id === postId){
+        return {...post, likes: post.likes + 1}
+      }
+      else return post
+    }))
   };
+
+  const search = searcharg => {
+       console.log(searcharg)
+       searchEdit(searcharg)
+       let filtered = []
+       posts.forEach(post => {
+        if(post.username.startsWith(searchterm)) { 
+          filtered.push(post)
+          setPosts(filtered)
+        }
+        else  setPosts([{
+        id: 1,
+        username: "Not Found",
+        thumbnailUrl: 'https://icon2.cleanpng.com/20180320/sqe/kisspng-twitch-computer-icons-streaming-media-youtube-live-tv-twitch-icon-5ab19172461392.001176751521586546287.jpg',
+        imageUrl: 'https://images.unsplash.com/photo-1477763858572-cda7deaa9bc5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1876&q=80',
+        likes: 400,
+        timestamp: "July 17th 2017, 12:42:40 pm",
+        comments: [
+            {
+                id: 22,
+                username: "philzcoffee",
+                text: "We've got more than just coffees!",
+            },
+            {
+                id: 23,
+                username: "biancasaurus",
+                text: "Looks delicious!",
+            },
+            {
+                id: 24,
+                username: "martinseludo",
+                text: "Can't wait to try it!",
+            },
+        ],
+    }]) 
+
+        }
+       )
+
+    }
+  
 
   return (
     <div className='App'>
-      {/* Add SearchBar and Posts here to render them */}
-      {/* Check the implementation of each component, to see what props they require, if any! */}
+      {/* Add SearchBar and Posts here to render them */ 
+      <SearchBar search = {search}/>
+      }
+      {/* Check the implementation of each component, to see what props they require, if any! */
+
+      <Posts likePost={likePost} posts={posts}/>
+      }
     </div>
   );
 };
